@@ -1,0 +1,71 @@
+# Copyright 2016 Dell Inc. All rights reserved.
+name: "device.service.http.v2"
+manufacturer: "youngwook"
+model: "raspberry"
+labels: 
+    - "device-service"
+    - "http-test"
+description: "Connect With Device through REST API on HTTP"
+deviceResources:
+    -   
+        name: tmp
+        description: "get temperature values"
+        attributes: 
+            { name: "http" }
+        properties: 
+            value:
+                { type: "String", size: "0", readWrite: "R", defaultValue: "" }
+            units:
+                { type: "String", readWrite: "R", defaultValue: "" }    
+    -   
+        name: fan
+        description: "put fan execution time"
+        attributes: 
+            { name: "http" }
+        properties: 
+            value:
+                { type: "Integer", size: "4", readWrite: "W", precision: "3", defaultValue: "1000", minimum: "0", maximum: "1000"  }
+            units:
+                { type: "String", readWrite: "R", defaultValue: "" }    
+
+
+resources:
+    -
+        name: tmp
+        get:
+            - { operation: "get", object: "tmp", property: "value", parameter: "tmp" }
+    -
+        name: fan
+        set:
+            - { operation: "set", object: "fan", property: "value", parameter: "time" }          
+
+commands: 
+  - 
+    name: tmp
+    get: 
+        path: "/api/v1/device/{deviceId}/tmp"
+        responses:
+          - 
+            code: "200"
+            description: ""
+            expectedValues: ["tmp"]
+          -
+            code: "503"
+            description: "service unavailable"
+            expectedValues: []
+           
+  - 
+    name: fan
+    put: 
+        path: "/api/v1/device/{deviceId}/fan"
+        parameterNames: ["time"]
+        responses:
+          - 
+            code: "200"
+            description: "valid and accepted"
+            expectedValues: []
+
+          -
+            code: "503"
+            description: "service unavailable"
+            expectedValues: []
